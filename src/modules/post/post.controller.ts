@@ -1,3 +1,4 @@
+import { IJwtPayload } from '@/interfaces';
 import { PostService } from '@/modules/post/post.service';
 import { Body, Controller, Post, Req } from '@nestjs/common';
 import express from 'express';
@@ -8,7 +9,7 @@ export class PostController {
 
   @Post('/create')
   createPost(@Body() body: any, @Req() req: express.Request) {
-    const result = this.postService.createPost(body);
+    const result = this.postService.createPost(body, req.user as IJwtPayload);
     return result;
   }
 }
