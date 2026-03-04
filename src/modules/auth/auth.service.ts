@@ -1,18 +1,18 @@
-import { IUser } from '@/modules/auth/auth.interface';
 import { Injectable } from '@nestjs/common';
 import { prisma } from '../../config/prisma';
 import bcryptjs from 'bcryptjs';
 import { env } from '../../config/env';
 import { jwtTokenGen } from '@/helper/jwtTokenGen';
+import { LoginDto, RegisterDto } from '@/modules/auth/auth.dto';
 
 @Injectable()
 export class AuthService {
-  async register(userData: IUser) {
+  async register(userData: RegisterDto) {
     const { email, password, ...rest } = userData;
 
     const hasedPass = await bcryptjs.hash(
       password,
-      Number((await env).BCRYPT.SALT_NUMBER),
+      Number(env.BCRYPT.SALT_NUMBER),
     );
 
     const user = await prisma.user.create({
@@ -26,7 +26,7 @@ export class AuthService {
     return user;
   }
 
-  async login(userData: IUser) {
+  async login(userData: LoginDto) {
     const { email, password } = userData;
 
     const user = await prisma.user.findUnique({
