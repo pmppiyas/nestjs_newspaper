@@ -6,14 +6,15 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Get()
-  getHi(): string {
-    return this.authService.getHi();
-  }
-
   @Post('register')
   register(@Body() body: IUser) {
     const result = this.authService.register(body);
+    return result;
+  }
+
+  @Post('login')
+  login(@Body() body: IUser) {
+    const result = this.authService.login(body);
     return result;
   }
 }
