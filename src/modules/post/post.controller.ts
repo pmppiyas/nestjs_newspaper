@@ -1,6 +1,15 @@
 import { IJwtPayload } from '@/interfaces';
 import { PostService } from '@/modules/post/post.service';
-import { Body, Controller, Get, Patch, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import express from 'express';
 
 @Controller('post')
@@ -44,7 +53,11 @@ export class PostController {
       newsId,
       req.body,
     );
-
     return result;
+  }
+
+  @Delete('delete')
+  deleteNews(@Req() req: express.Request, @Query('newsId') newsId: string) {
+    return this.postService.deleteNews(req?.user as IJwtPayload, newsId);
   }
 }

@@ -118,10 +118,10 @@ export class PostService {
     };
   }
 
-  async updateNews(user: IJwtPayload, postId: string, payload: any) {
+  async updateNews(user: IJwtPayload, newsId: string, payload: any) {
     const news = await prisma.news.findUnique({
       where: {
-        id: postId,
+        id: newsId,
       },
     });
 
@@ -137,7 +137,7 @@ export class PostService {
 
     const update = await prisma.news.update({
       where: {
-        id: postId,
+        id: newsId,
       },
       data: {
         ...payload,
@@ -145,5 +145,31 @@ export class PostService {
     });
 
     return update;
+  }
+
+  async deleteNews(user: IJwtPayload, newsId: string) {
+    const news = await prisma.news.findUnique({
+      where: {
+        id: newsId,
+      },
+    });
+
+    if (!news) {
+      throw new Error('Targeted news not found!');
+    }
+
+    const isOwner = (news.authorId = user.id);
+
+    if (!isOwner) {
+      throw new Error('You are not authorized');
+    }
+
+    await prisma.news.delete({
+      where: {
+        id: newsId,
+      },
+    });
+
+    return null;
   }
 }
