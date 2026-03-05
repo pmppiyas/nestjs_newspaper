@@ -117,4 +117,33 @@ export class PostService {
       },
     };
   }
+
+  async updateNews(user: IJwtPayload, postId: string, payload: any) {
+    const news = await prisma.news.findUnique({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (!news) {
+      throw new Error('Targeted news not found!');
+    }
+
+    const isOwner = (news.authorId = user.id);
+
+    if (!isOwner) {
+      throw new Error('You are not authorized!');
+    }
+
+    const update = await prisma.news.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        ...payload,
+      },
+    });
+
+    return update;
+  }
 }

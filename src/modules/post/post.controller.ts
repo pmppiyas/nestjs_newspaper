@@ -1,6 +1,6 @@
 import { IJwtPayload } from '@/interfaces';
 import { PostService } from '@/modules/post/post.service';
-import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Query, Req } from '@nestjs/common';
 import express from 'express';
 
 @Controller('post')
@@ -34,6 +34,17 @@ export class PostController {
       sortOrder,
       authorId,
     });
+    return result;
+  }
+
+  @Patch('edit')
+  updateNews(@Req() req: express.Request, @Query('newsId') newsId: string) {
+    const result = this.postService.updateNews(
+      req?.user as IJwtPayload,
+      newsId,
+      req.body,
+    );
+
     return result;
   }
 }
