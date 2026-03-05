@@ -44,7 +44,7 @@ export class AuthService {
     const isPassCorrect = await bcryptjs.compare(password, user.password);
 
     if (!isPassCorrect) {
-      throw new NotAcceptableException('Invalid Password');
+      throw new NotAcceptableException('Invalid Password!');
     }
 
     const { accessToken, refreshToken } = await jwtTokenGen({

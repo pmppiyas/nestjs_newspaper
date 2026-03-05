@@ -8,8 +8,13 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  register(@Body() body: RegisterDto) {
-    return this.authService.register(body);
+  async register(@Body() body: RegisterDto) {
+    const result = await this.authService.register(body);
+    return {
+      success: true,
+      message: 'User created successfully!',
+      data: result,
+    };
   }
 
   @Post('login')
@@ -35,6 +40,6 @@ export class AuthController {
       maxAge: 60 * 60 * 24 * 30 * 1000,
     });
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, message: 'User login successfully!' };
   }
 }

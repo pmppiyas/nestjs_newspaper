@@ -7,17 +7,33 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  createCategory(@Body() body: CategoryDto) {
-    return this.categoryService.createCategory(body);
+  async createCategory(@Body() body: CategoryDto) {
+    const result = await this.categoryService.createCategory(body);
+    return {
+      success: true,
+      message: 'Category created successfully!',
+      data: result,
+    };
   }
 
   @Patch(':id')
-  updateCategory(@Param('id') id: string, @Body() body: CategoryDto) {
-    return this.categoryService.updateCategory(id, body);
+  async updateCategory(@Param('id') id: string, @Body() body: CategoryDto) {
+    const result = await this.categoryService.updateCategory(id, body);
+
+    return {
+      success: true,
+      message: 'Category updated successfully!',
+      data: result,
+    };
   }
 
   @Delete(':id')
-  deleteCategory(@Param('id') id: string) {
-    return this.categoryService.deleteCategory(id);
+  async deleteCategory(@Param('id') id: string) {
+    await this.categoryService.deleteCategory(id);
+
+    return {
+      success: true,
+      message: 'Category deleted successfully!',
+    };
   }
 }

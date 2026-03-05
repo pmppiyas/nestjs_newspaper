@@ -17,13 +17,20 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Post('/create')
-  createPost(@Body() body: any, @Req() req: express.Request) {
-    const result = this.postService.createPost(body, req.user as IJwtPayload);
-    return result;
+  async createPost(@Body() body: any, @Req() req: express.Request) {
+    const result = await this.postService.createPost(
+      body,
+      req.user as IJwtPayload,
+    );
+    return {
+      success: true,
+      message: 'News posted successfully!',
+      data: result,
+    };
   }
 
   @Get('')
-  getAllNews(
+  async getAllNews(
     @Query('category') category?: string,
     @Query('tags') tags?: string,
     @Query('limit') limit = '10',
@@ -34,7 +41,7 @@ export class PostController {
   ) {
     const tagsArray = tags ? tags.split(',') : undefined;
 
-    const result = this.postService.getAllNews({
+    const result = await this.postService.getAllNews({
       category,
       tags: tagsArray,
       limit: parseInt(limit),
@@ -43,21 +50,40 @@ export class PostController {
       sortOrder,
       authorId,
     });
-    return result;
+    return {
+      success: true,
+      message: 'News restrieved successfully!',
+      data: result,
+    };
   }
 
   @Patch('edit')
-  updateNews(@Req() req: express.Request, @Query('newsId') newsId: string) {
-    const result = this.postService.updateNews(
+  async updateNews(
+    @Req() req: express.Request,
+    @Query('newsId') newsId: string,
+  ) {
+    const result = await this.postService.updateNews(
       req?.user as IJwtPayload,
       newsId,
       req.body,
     );
-    return result;
+    return {
+      success: true,
+      message: 'News updated successfully!',
+      data: result,
+    };
   }
 
   @Delete('delete')
-  deleteNews(@Req() req: express.Request, @Query('newsId') newsId: string) {
-    return this.postService.deleteNews(req?.user as IJwtPayload, newsId);
+  async deleteNews(
+    @Req() req: express.Request,
+    @Query('newsId') newsId: string,
+  ) {
+    await this.postService.deleteNews(req?.user as IJwtPayload, newsId);
+
+    return {
+      success: true,
+      message: 'News deleted successfully!',
+    };
   }
 }

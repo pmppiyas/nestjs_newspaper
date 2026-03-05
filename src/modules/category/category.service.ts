@@ -1,11 +1,23 @@
 import { prisma } from '@/config/prisma';
 
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CategoryService {
   async createCategory(payload: Prisma.CategoryCreateInput) {
+    const isExist = await prisma.category.findFirst({
+      where: {
+        name: payload.name,
+      },
+    });
+    if (isExist) {
+      throw new ConflictException('Category with this name is already exist!');
+    }
     return await prisma.category.create({
       data: {
         ...payload,
@@ -14,6 +26,16 @@ export class CategoryService {
   }
 
   async updateCategory(id: string, payload: Prisma.CategoryUpdateInput) {
+    const isExist = await prisma.category.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (!isExist) {
+      throw new NotFoundException('Targeted news is not found!');
+    }
+
     return await prisma.category.update({
       where: {
         id,
@@ -25,6 +47,16 @@ export class CategoryService {
   }
 
   async deleteCategory(id: string) {
+    const isExist = await prisma.category.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (!isExist) {
+      throw new NotFoundException('Targeted news is not found!');
+    }
+
     await prisma.category.delete({
       where: {
         id,

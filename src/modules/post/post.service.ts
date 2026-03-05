@@ -108,17 +108,13 @@ export class PostService {
     });
 
     return {
-      success: true,
-      message: 'News retrieved successfully!',
-      data: {
-        news,
-        meta: {
-          total,
-          inPage,
-          page,
-          sortBy,
-          sortOrder,
-        },
+      news,
+      meta: {
+        total,
+        inPage,
+        page,
+        sortBy,
+        sortOrder,
       },
     };
   }
