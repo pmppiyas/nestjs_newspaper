@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { prisma } from '../../config/prisma';
 import bcryptjs from 'bcryptjs';
 import { env } from '../../config/env';
@@ -34,19 +38,13 @@ export class AuthService {
     });
 
     if (!user) {
-      return {
-        success: false,
-        message: 'User not found!',
-      };
+      throw new NotFoundException('User not found!');
     }
 
     const isPassCorrect = await bcryptjs.compare(password, user.password);
 
     if (!isPassCorrect) {
-      return {
-        success: false,
-        message: 'Invalid Password',
-      };
+      throw new NotAcceptableException('Invalid Password');
     }
 
     const { accessToken, refreshToken } = await jwtTokenGen({

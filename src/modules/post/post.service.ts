@@ -1,6 +1,11 @@
 import { prisma } from '@/config/prisma';
 import { IJwtPayload } from '@/interfaces';
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 @Injectable()
 export class PostService {
@@ -126,13 +131,13 @@ export class PostService {
     });
 
     if (!news) {
-      throw new Error('Targeted news not found!');
+      throw new NotFoundException('Targeted news not found!');
     }
 
     const isOwner = (news.authorId = user.id);
 
     if (!isOwner) {
-      throw new Error('You are not authorized!');
+      throw new UnauthorizedException('You are not authorized!');
     }
 
     const update = await prisma.news.update({
@@ -155,13 +160,13 @@ export class PostService {
     });
 
     if (!news) {
-      throw new Error('Targeted news not found!');
+      throw new NotFoundException('Targeted news not found!');
     }
 
     const isOwner = (news.authorId = user.id);
 
     if (!isOwner) {
-      throw new Error('You are not authorized');
+      throw new UnauthorizedException('You are not authorized');
     }
 
     await prisma.news.delete({
