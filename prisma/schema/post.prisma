@@ -13,5 +13,7 @@ model News {
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
 
+  tags Tag[] @relation("newsTags")
+
   @@map("news")
 }
