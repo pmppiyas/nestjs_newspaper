@@ -5,9 +5,10 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PostModule } from './modules/post/post.module';
 import { LoggerMiddleware } from '@/middleware/logger.middleware';
 import { PostController } from '@/modules/post/post.controller';
+import { CategoryModule } from './modules/category/category.module';
 
 @Module({
-  imports: [AuthModule, PostModule],
+  imports: [AuthModule, PostModule, CategoryModule],
   controllers: [AppController],
   providers: [AppService],
 })
