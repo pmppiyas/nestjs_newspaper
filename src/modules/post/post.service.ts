@@ -2,7 +2,6 @@ import { prisma } from '@/config/prisma';
 import { IJwtPayload } from '@/interfaces';
 import {
   Injectable,
-  NotAcceptableException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';

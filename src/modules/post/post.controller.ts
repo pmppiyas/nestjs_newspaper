@@ -1,3 +1,4 @@
+import { AuthGuard } from '@/guards/auth.guard';
 import { IJwtPayload } from '@/interfaces';
 import { PostService } from '@/modules/post/post.service';
 import {
@@ -9,6 +10,7 @@ import {
   Post,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import express from 'express';
 
@@ -16,7 +18,8 @@ import express from 'express';
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  @Post('/create')
+  @Post('create')
+  @UseGuards(AuthGuard)
   async createPost(@Body() body: any, @Req() req: express.Request) {
     const result = await this.postService.createPost(
       body,
@@ -58,6 +61,7 @@ export class PostController {
   }
 
   @Patch('edit')
+  @UseGuards(AuthGuard)
   async updateNews(
     @Req() req: express.Request,
     @Query('newsId') newsId: string,
@@ -75,6 +79,7 @@ export class PostController {
   }
 
   @Delete('delete')
+  @UseGuards(AuthGuard)
   async deleteNews(
     @Req() req: express.Request,
     @Query('newsId') newsId: string,
