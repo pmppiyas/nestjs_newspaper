@@ -1,4 +1,4 @@
-import { JwtPayload } from '@/helper/verifyToken';
+import { JwtPayload } from '@/common/helper/verifyToken';
 
 declare global {
   namespace Express {

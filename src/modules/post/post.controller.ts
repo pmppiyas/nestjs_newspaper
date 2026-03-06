@@ -1,5 +1,6 @@
-import { AuthGuard } from '@/guards/auth.guard';
-import { IJwtPayload } from '@/interfaces';
+import { CurrentUser } from '@/common/decorators/user.decorator';
+import { AuthGuard } from '@/common/guards/auth.guard';
+import { IJwtPayload } from '@/common/interfaces/jwt.interface';
 import { PostService } from '@/modules/post/post.service';
 import {
   Body,
@@ -20,11 +21,8 @@ export class PostController {
 
   @Post('create')
   @UseGuards(AuthGuard)
-  async createPost(@Body() body: any, @Req() req: express.Request) {
-    const result = await this.postService.createPost(
-      body,
-      req.user as IJwtPayload,
-    );
+  async createPost(@Body() body: any, @CurrentUser() user: IJwtPayload) {
+    const result = await this.postService.createPost(body, user);
     return {
       message: 'News posted successfully!',
       data: result,
@@ -61,14 +59,11 @@ export class PostController {
   @Patch('edit')
   @UseGuards(AuthGuard)
   async updateNews(
+    @CurrentUser() user: IJwtPayload,
     @Req() req: express.Request,
     @Query('newsId') newsId: string,
   ) {
-    const result = await this.postService.updateNews(
-      req?.user as IJwtPayload,
-      newsId,
-      req.body,
-    );
+    const result = await this.postService.updateNews(user, newsId, req.body);
     return {
       message: 'News updated successfully!',
       data: result,
@@ -78,10 +73,10 @@ export class PostController {
   @Delete('delete')
   @UseGuards(AuthGuard)
   async deleteNews(
-    @Req() req: express.Request,
+    @CurrentUser() user: IJwtPayload,
     @Query('newsId') newsId: string,
   ) {
-    await this.postService.deleteNews(req?.user as IJwtPayload, newsId);
+    await this.postService.deleteNews(user, newsId);
 
     return {
       message: 'News deleted successfully!',

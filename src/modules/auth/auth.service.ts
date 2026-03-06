@@ -3,10 +3,10 @@ import {
   NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
-import { prisma } from '../../config/prisma';
+import { prisma } from '../../common/config/prisma';
 import bcryptjs from 'bcryptjs';
-import { env } from '../../config/env';
-import { jwtTokenGen } from '@/helper/jwtTokenGen';
+import { env } from '../../common/config/env';
+import { jwtTokenGen } from '@/common/helper/jwtTokenGen';
 import { LoginDto, RegisterDto } from '@/modules/auth/auth.dto';
 
 @Injectable()
