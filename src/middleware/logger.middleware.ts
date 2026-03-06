@@ -1,6 +1,6 @@
 import { prisma } from '@/config/prisma';
 import { verifyToken } from '@/helper/verifyToken';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 
 @Injectable()
@@ -11,17 +11,12 @@ export class LoggerMiddleware {
         req.cookies['accessToken'] || req.headers.authorization?.split(' ')[1];
 
       if (!accessToken) {
-        next({
-          message: 'No Token Received!',
-        });
+        throw new UnauthorizedException('No Token Received!');
       }
 
       const decoded = verifyToken(accessToken);
       if (!decoded.id || !decoded.email) {
-        return {
-          success: false,
-          message: 'You are unauthorized!',
-        };
+        throw new UnauthorizedException('You are unauthorized!');
       }
 
       const isExist = await prisma.user.findUnique({
@@ -32,9 +27,7 @@ export class LoggerMiddleware {
       });
 
       if (!isExist) {
-        next({
-          message: 'You are unauthorized!',
-        });
+        throw new UnauthorizedException('You are unauthorized!');
       }
 
       req.user = decoded;
