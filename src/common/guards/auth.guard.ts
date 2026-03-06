@@ -1,5 +1,5 @@
-import { prisma } from '@/config/prisma';
-import { verifyToken } from '@/helper/verifyToken';
+import { prisma } from '@/common/config/prisma';
+import { verifyToken } from '@/common/helper/verifyToken';
 import {
   CanActivate,
   ExecutionContext,

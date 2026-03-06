@@ -1,5 +1,5 @@
-import { prisma } from '@/config/prisma';
-import { IJwtPayload } from '@/interfaces';
+import { prisma } from '@/common/config/prisma';
+import { IJwtPayload } from '@/common/interfaces/jwt.interface';
 import {
   Injectable,
   NotFoundException,
