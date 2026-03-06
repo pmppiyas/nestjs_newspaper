@@ -7,7 +7,8 @@ import { prisma } from '../../common/config/prisma';
 import bcryptjs from 'bcryptjs';
 import { env } from '../../common/config/env';
 import { jwtTokenGen } from '@/common/helper/jwtTokenGen';
-import { LoginDto, RegisterDto } from '@/modules/auth/auth.dto';
+import { LoginDto } from '@/modules/auth/dto/login.dto';
+import { RegisterDto } from '@/modules/auth/dto/create.dto';
 
 @Injectable()
 export class AuthService {

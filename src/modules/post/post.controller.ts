@@ -1,6 +1,15 @@
 import { CurrentUser } from '@/common/decorators/user.decorator';
 import { AuthGuard } from '@/common/guards/auth.guard';
 import { IJwtPayload } from '@/common/interfaces/jwt.interface';
+import { ZodValidationPipe } from '@/common/pipes/zod_validation.pipe';
+import {
+  type CreateNewsDto,
+  createNewsSchema,
+} from '@/modules/post/dto/create.dto';
+import {
+  type UpdateNewsDto,
+  updateNewsSchema,
+} from '@/modules/post/dto/update.dto';
 import { PostService } from '@/modules/post/post.service';
 import {
   Body,
@@ -10,10 +19,8 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   UseGuards,
 } from '@nestjs/common';
-import express from 'express';
 
 @Controller('post')
 export class PostController {
@@ -21,7 +28,10 @@ export class PostController {
 
   @Post('create')
   @UseGuards(AuthGuard)
-  async createPost(@Body() body: any, @CurrentUser() user: IJwtPayload) {
+  async createPost(
+    @Body(new ZodValidationPipe(createNewsSchema)) body: CreateNewsDto,
+    @CurrentUser() user: IJwtPayload,
+  ) {
     const result = await this.postService.createPost(body, user);
     return {
       message: 'News posted successfully!',
@@ -60,10 +70,10 @@ export class PostController {
   @UseGuards(AuthGuard)
   async updateNews(
     @CurrentUser() user: IJwtPayload,
-    @Req() req: express.Request,
+    @Body(new ZodValidationPipe(updateNewsSchema)) body: UpdateNewsDto,
     @Query('newsId') newsId: string,
   ) {
-    const result = await this.postService.updateNews(user, newsId, req.body);
+    const result = await this.postService.updateNews(user, newsId, body);
     return {
       message: 'News updated successfully!',
       data: result,

@@ -1,14 +1,21 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import express from 'express';
 import { AuthService } from '@/modules/auth/auth.service';
-import { LoginDto, RegisterDto } from '@/modules/auth/auth.dto';
+import { ZodValidationPipe } from '@/common/pipes/zod_validation.pipe';
+import {
+  registerSchema,
+  type RegisterDto,
+} from '@/modules/auth/dto/create.dto';
+import { loginSchema, type LoginDto } from '@/modules/auth/dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  async register(@Body() body: RegisterDto) {
+  async register(
+    @Body(new ZodValidationPipe(registerSchema)) body: RegisterDto,
+  ) {
     const result = await this.authService.register(body);
     return {
       success: true,
@@ -19,7 +26,7 @@ export class AuthController {
 
   @Post('login')
   async login(
-    @Body() body: LoginDto,
+    @Body(new ZodValidationPipe(loginSchema)) body: LoginDto,
     @Res({ passthrough: true }) res: express.Response,
   ) {
     const { accessToken, refreshToken } = await this.authService.login(body);

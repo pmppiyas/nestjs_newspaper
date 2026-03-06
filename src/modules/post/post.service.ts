@@ -23,7 +23,7 @@ export class PostService {
           authorId: IAM?.id,
           ...restData,
           tags: {
-            connectOrCreate: tags.map((name: string) => ({
+            connectOrCreate: tags?.map((name: string) => ({
               where: { name },
               create: { name },
             })),
