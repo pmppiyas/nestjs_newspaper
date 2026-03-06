@@ -54,7 +54,7 @@ export class CategoryService {
     });
 
     if (!isExist) {
-      throw new NotFoundException('Targeted news is not found!');
+      throw new NotFoundException('Targeted category is not found!');
     }
 
     await prisma.category.delete({

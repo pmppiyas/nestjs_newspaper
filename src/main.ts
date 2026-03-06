@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import { GlobalExceptionFilter } from '@/middleware/globalExceptionFilter';
+import { ResponseInterceptor } from '@/interceptors/response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,6 +10,8 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.useGlobalFilters(new GlobalExceptionFilter());
+
+  app.useGlobalInterceptors(new ResponseInterceptor());
 
   await app.listen(process.env.PORT ?? 3000);
 }

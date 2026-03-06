@@ -26,7 +26,6 @@ export class PostController {
       req.user as IJwtPayload,
     );
     return {
-      success: true,
       message: 'News posted successfully!',
       data: result,
     };
@@ -54,7 +53,6 @@ export class PostController {
       authorId,
     });
     return {
-      success: true,
       message: 'News restrieved successfully!',
       data: result,
     };
@@ -72,7 +70,6 @@ export class PostController {
       req.body,
     );
     return {
-      success: true,
       message: 'News updated successfully!',
       data: result,
     };
@@ -87,7 +84,6 @@ export class PostController {
     await this.postService.deleteNews(req?.user as IJwtPayload, newsId);
 
     return {
-      success: true,
       message: 'News deleted successfully!',
     };
   }
