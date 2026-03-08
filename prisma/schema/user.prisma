@@ -1,10 +1,11 @@
 model User {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String?
-  email     String   @unique
+  email     String    @unique
   password  String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   news      News[]
+  comments  Comment[]
 
   @@map("users")
 }
