@@ -1,3 +1,6 @@
+import { CurrentUser } from '@/common/decorators/user.decorator';
+import { AuthGuard } from '@/common/guards/auth.guard';
+import { IJwtPayload } from '@/common/interfaces/jwt.interface';
 import { ZodValidationPipe } from '@/common/pipes/zod_validation.pipe';
 import { CategoryService } from '@/modules/category/category.service';
 import {
@@ -8,7 +11,15 @@ import {
   type CategoryUpdateDto,
   categoryUpdateSchema,
 } from '@/modules/category/dto/update.dto';
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 
 @Controller('category')
 export class CategoryController {
@@ -39,8 +50,13 @@ export class CategoryController {
   }
 
   @Delete(':id')
-  async deleteCategory(@Param('id') id: string) {
-    await this.categoryService.deleteCategory(id);
+  @UseGuards(AuthGuard)
+  async deleteCategory(
+    @Param('id') id: string,
+    @CurrentUser() user: IJwtPayload,
+  ) {
+    console.log(id);
+    await this.categoryService.deleteCategory(user, id);
 
     return {
       message: 'Category deleted successfully!',

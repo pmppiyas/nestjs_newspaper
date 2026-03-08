@@ -59,4 +59,28 @@ export class CommentService {
       },
     });
   }
+
+  async deleteComment(user: IJwtPayload, commnetId: string) {
+    const existNews = await prisma.comment.findUnique({
+      where: {
+        id: commnetId,
+      },
+    });
+
+    if (!existNews) {
+      throw new NotFoundException('Targeted comment not found!');
+    }
+
+    if (existNews.authorId !== user.id) {
+      throw new UnauthorizedException('You are not authorized for this');
+    }
+
+    await prisma.comment.delete({
+      where: {
+        id: commnetId,
+      },
+    });
+
+    return null;
+  }
 }
