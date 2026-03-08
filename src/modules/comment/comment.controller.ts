@@ -1,3 +1,4 @@
+import { prisma } from '@/common/config/prisma';
 import { CurrentUser } from '@/common/decorators/user.decorator';
 import { AuthGuard } from '@/common/guards/auth.guard';
 import { IJwtPayload } from '@/common/interfaces/jwt.interface';
@@ -11,7 +12,15 @@ import {
   type CommentUpdateDto,
   commentUpdateSchema,
 } from '@/modules/comment/dto/update.sto';
-import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 
 @Controller('comment')
 export class CommentController {
@@ -39,6 +48,19 @@ export class CommentController {
     return {
       message: 'Comment updated successfully',
       data: result,
+    };
+  }
+
+  @Delete('delete/:id')
+  @UseGuards(AuthGuard)
+  async deleteComment(
+    @CurrentUser() user: IJwtPayload,
+    @Param('id') commentId: string,
+  ) {
+    await this.commentService.deleteComment(user, commentId);
+
+    return {
+      message: 'Comment deleted successfully!',
     };
   }
 }
