@@ -7,20 +7,38 @@ import {
   type CommentCreateDto,
   commentCreateSchema,
 } from '@/modules/comment/dto/create.dto';
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  type CommentUpdateDto,
+  commentUpdateSchema,
+} from '@/modules/comment/dto/update.sto';
+import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
 
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
-  @Post('')
+  @Post('post')
   @UseGuards(AuthGuard)
   async createComment(
     @CurrentUser() user: IJwtPayload,
     @Body(new ZodValidationPipe(commentCreateSchema)) body: CommentCreateDto,
   ) {
-    const result = this.commentService.createComment(user, body);
+    const result = await this.commentService.createComment(user, body);
 
-    return result;
+    return { message: 'Commented successfully!', data: result };
+  }
+
+  @Patch('update')
+  @UseGuards(AuthGuard)
+  async updateComment(
+    @CurrentUser() user: IJwtPayload,
+    @Body(new ZodValidationPipe(commentUpdateSchema)) body: CommentUpdateDto,
+  ) {
+    const result = await this.commentService.updateComment(user, body);
+
+    return {
+      message: 'Comment updated successfully',
+      data: result,
+    };
   }
 }
