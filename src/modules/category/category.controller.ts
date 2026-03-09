@@ -1,6 +1,5 @@
-import { CurrentUser } from '@/common/decorators/user.decorator';
-import { AuthGuard } from '@/common/guards/auth.guard';
-import { IJwtPayload } from '@/common/interfaces/jwt.interface';
+import { Roles } from '@/common/decorators/roles.decorator';
+import { RolesGuard } from '@/common/guards/roles.guard';
 import { ZodValidationPipe } from '@/common/pipes/zod_validation.pipe';
 import { CategoryService } from '@/modules/category/category.service';
 import {
@@ -20,12 +19,15 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { Role } from '@prisma/client';
 
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
   async createCategory(
     @Body(new ZodValidationPipe(categoryCreateSchema)) body: CategoryCreateDto,
   ) {
@@ -37,6 +39,8 @@ export class CategoryController {
   }
 
   @Patch(':id')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
   async updateCategory(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(categoryUpdateSchema)) body: CategoryUpdateDto,
@@ -50,13 +54,10 @@ export class CategoryController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
-  async deleteCategory(
-    @Param('id') id: string,
-    @CurrentUser() user: IJwtPayload,
-  ) {
-    console.log(id);
-    await this.categoryService.deleteCategory(user, id);
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  async deleteCategory(@Param('id') id: string) {
+    await this.categoryService.deleteCategory(id);
 
     return {
       message: 'Category deleted successfully!',

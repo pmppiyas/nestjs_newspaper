@@ -1,5 +1,8 @@
+import { Auth } from '@/common/decorators/auth.decorator';
+import { Roles } from '@/common/decorators/roles.decorator';
 import { CurrentUser } from '@/common/decorators/user.decorator';
 import { AuthGuard } from '@/common/guards/auth.guard';
+import { RolesGuard } from '@/common/guards/roles.guard';
 import { IJwtPayload } from '@/common/interfaces/jwt.interface';
 import { ZodValidationPipe } from '@/common/pipes/zod_validation.pipe';
 import {
@@ -21,13 +24,14 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { Role } from '@prisma/client';
 
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Post('create')
-  @UseGuards(AuthGuard)
+  @Auth(Role.ADMIN, Role.JOURNALIST)
   async createPost(
     @Body(new ZodValidationPipe(createNewsSchema)) body: CreateNewsDto,
     @CurrentUser() user: IJwtPayload,
@@ -67,7 +71,7 @@ export class PostController {
   }
 
   @Patch('edit')
-  @UseGuards(AuthGuard)
+  @Auth(Role.ADMIN, Role.JOURNALIST)
   async updateNews(
     @CurrentUser() user: IJwtPayload,
     @Body(new ZodValidationPipe(updateNewsSchema)) body: UpdateNewsDto,
@@ -81,7 +85,7 @@ export class PostController {
   }
 
   @Delete('delete')
-  @UseGuards(AuthGuard)
+  @Auth(Role.ADMIN, Role.JOURNALIST)
   async deleteNews(
     @CurrentUser() user: IJwtPayload,
     @Query('newsId') newsId: string,

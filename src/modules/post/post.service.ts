@@ -5,6 +5,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class PostService {
@@ -131,7 +132,7 @@ export class PostService {
 
     const isOwner = (news.authorId = user.id);
 
-    if (!isOwner) {
+    if (!isOwner || user.role !== Role.ADMIN) {
       throw new UnauthorizedException('You are not authorized!');
     }
 

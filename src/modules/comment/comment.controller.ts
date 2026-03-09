@@ -1,4 +1,3 @@
-import { prisma } from '@/common/config/prisma';
 import { CurrentUser } from '@/common/decorators/user.decorator';
 import { AuthGuard } from '@/common/guards/auth.guard';
 import { IJwtPayload } from '@/common/interfaces/jwt.interface';

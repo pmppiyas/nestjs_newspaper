@@ -6,6 +6,7 @@ model User {
   createdAt DateTime  @default(now())
   news      News[]
   comments  Comment[]
+  role      Role      @default(READER)
 
   @@map("users")
 }

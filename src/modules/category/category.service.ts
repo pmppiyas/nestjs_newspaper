@@ -1,5 +1,4 @@
 import { prisma } from '@/common/config/prisma';
-import { IJwtPayload } from '@/common/interfaces/jwt.interface';
 
 import {
   ConflictException,
@@ -47,7 +46,7 @@ export class CategoryService {
     });
   }
 
-  async deleteCategory(user: IJwtPayload, id: string) {
+  async deleteCategory(id: string) {
     const isExist = await prisma.category.findFirst({
       where: {
         id,

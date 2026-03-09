@@ -51,6 +51,7 @@ export class AuthService {
     const { accessToken, refreshToken } = await jwtTokenGen({
       id: user.id,
       email: user.email,
+      role: user.role,
     });
 
     return { accessToken, refreshToken };
