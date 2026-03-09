@@ -9,7 +9,17 @@ export class ZodValidationPipe implements PipeTransform {
   constructor(private schema: ZodSchema) {}
 
   transform(value: any, metadata: ArgumentMetadata) {
-    const result = this.schema.safeParse(value);
+    let parsedValue = value;
+
+    if (value && typeof value.data === 'string') {
+      try {
+        parsedValue = JSON.parse(value.data);
+      } catch (e) {
+        throw new BadRequestException('Invalid JSON format in data field');
+      }
+    }
+
+    const result = this.schema.safeParse(parsedValue);
 
     if (!result.success) {
       const message = result.error.issues
