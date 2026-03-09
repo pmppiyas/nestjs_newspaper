@@ -1,8 +1,6 @@
+import { multerOptions } from '@/common/config/multer.config';
 import { Auth } from '@/common/decorators/auth.decorator';
-import { Roles } from '@/common/decorators/roles.decorator';
 import { CurrentUser } from '@/common/decorators/user.decorator';
-import { AuthGuard } from '@/common/guards/auth.guard';
-import { RolesGuard } from '@/common/guards/roles.guard';
 import { IJwtPayload } from '@/common/interfaces/jwt.interface';
 import { ZodValidationPipe } from '@/common/pipes/zod_validation.pipe';
 import {
@@ -22,8 +20,11 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+
 import { Role } from '@prisma/client';
 
 @Controller('post')
@@ -32,11 +33,18 @@ export class PostController {
 
   @Post('create')
   @Auth(Role.ADMIN, Role.JOURNALIST)
+  @UseInterceptors(FileInterceptor('image', multerOptions))
   async createPost(
+    @UploadedFile() file: Express.Multer.File,
     @Body(new ZodValidationPipe(createNewsSchema)) body: CreateNewsDto,
     @CurrentUser() user: IJwtPayload,
   ) {
-    const result = await this.postService.createPost(body, user);
+    const imageUrl = file?.path;
+
+    const result = await this.postService.createPost(
+      { ...body, imageUrl },
+      user,
+    );
     return {
       message: 'News posted successfully!',
       data: result,
