@@ -5,7 +5,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Role } from '@prisma/client';
+import { Role } from '../../../prisma/generated/prisma/client';
 
 @Injectable()
 export class PostService {

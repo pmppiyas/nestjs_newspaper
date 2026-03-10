@@ -15,9 +15,9 @@
     "sourceMap": true,
     "outDir": "./dist",
     // "ignoreDeprecations": "6.0",
-    "baseUrl": "./",
-    "paths": {"@/*": ["src/*"],
-    "@prisma": ["prisma/generated/prisma"]},
+
+    "paths": {"@/*": ["./src/*"],
+    "@prisma": ["../../../prisma/generated/prisma"]},
     "strict": true,
     "incremental": true,
     "skipLibCheck": true,

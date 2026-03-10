@@ -25,7 +25,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import { Role } from '@prisma/client';
+import { Role } from '../../../prisma/generated/prisma/client';
 
 @Controller('post')
 export class PostController {
