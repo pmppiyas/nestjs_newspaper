@@ -19,7 +19,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { Role } from '../../../prisma/generated/prisma/client';
+import { Role } from '@prisma/client';
 
 @Controller('category')
 export class CategoryController {

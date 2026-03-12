@@ -4,8 +4,9 @@ model News {
   content     String
   imageUrl    String?
   publishedAt DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @default(now())
+
+  viewCount Int @default(0)
 
   author   User   @relation(fields: [authorId], references: [id])
   authorId String

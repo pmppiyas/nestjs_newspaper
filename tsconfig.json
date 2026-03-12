@@ -14,10 +14,7 @@
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
-    // "ignoreDeprecations": "6.0",
-
-    "paths": {"@/*": ["./src/*"],
-    "@prisma": ["../../../prisma/generated/prisma"]},
+    "paths": {"@/*": ["./src/*"]},
     "strict": true,
     "incremental": true,
     "skipLibCheck": true,

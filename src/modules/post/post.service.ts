@@ -5,7 +5,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Role } from '../../../prisma/generated/prisma/client';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class PostService {
@@ -119,6 +119,31 @@ export class PostService {
     };
   }
 
+  async getById(newsId: string) {
+    const news = await prisma.news.findUnique({
+      where: {
+        id: newsId,
+      },
+    });
+
+    if (!news) {
+      throw new NotFoundException('Targeted news not founded!');
+    }
+
+    await prisma.news.update({
+      where: {
+        id: newsId,
+      },
+      data: {
+        viewCount: {
+          increment: 1,
+        },
+      },
+    });
+
+    return news;
+  }
+
   async updateNews(user: IJwtPayload, newsId: string, payload: any) {
     const news = await prisma.news.findUnique({
       where: {
@@ -142,6 +167,7 @@ export class PostService {
       },
       data: {
         ...payload,
+        updatedAt: new Date(),
       },
     });
 

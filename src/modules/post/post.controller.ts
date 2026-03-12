@@ -17,6 +17,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
   Query,
@@ -24,8 +25,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-
-import { Role } from '../../../prisma/generated/prisma/client';
+import { Role } from '@prisma/client';
 
 @Controller('post')
 export class PostController {
@@ -53,15 +53,26 @@ export class PostController {
 
   @Get('')
   async getAllNews(
+    @Query('section') section?: string,
     @Query('category') category?: string,
     @Query('tags') tags?: string,
     @Query('limit') limit = '10',
     @Query('page') page = '1',
-    @Query('sortBy') sortBy = 'createdAt',
+    @Query('sortBy') sortBy = 'publishedAt',
     @Query('sortOrder') sortOrder = 'desc',
     @Query('authorId') authorId?: string,
   ) {
     const tagsArray = tags ? tags.split(',') : undefined;
+
+    if (section === 'latest') {
+      sortBy = 'publishedAt';
+      sortOrder = 'desc';
+    }
+
+    if (section === 'popular') {
+      sortBy = 'viewCount';
+      sortOrder = 'desc';
+    }
 
     const result = await this.postService.getAllNews({
       category,
@@ -75,6 +86,16 @@ export class PostController {
     return {
       message: 'News restrieved successfully!',
       data: result,
+    };
+  }
+
+  @Get(':id')
+  async getById(@Param('id') newsId: string) {
+    const news = await this.postService.getById(newsId);
+
+    return {
+      message: 'Single news retrieved successfully!',
+      data: news,
     };
   }
 
