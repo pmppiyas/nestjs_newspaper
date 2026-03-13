@@ -1,4 +1,4 @@
-import { env } from '@/common/config/env';
+import { env } from '@/common/config/env.config';
 import jwt, { SignOptions } from 'jsonwebtoken';
 
 export const jwtTokenGen = async (payload: {

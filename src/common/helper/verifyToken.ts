@@ -1,4 +1,4 @@
-import { env } from '@/common/config/env';
+import { env } from '@/common/config/env.config';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
 interface MyTokenPayload {
