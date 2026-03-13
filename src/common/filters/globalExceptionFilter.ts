@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
+
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
@@ -17,11 +18,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let finalMessage = 'Internal Server Error';
 
-    // Prisma Error
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
-      status = HttpStatus.BAD_REQUEST;
       const modelName =
-        (exception?.meta?.modelName as string).toLowerCase() || 'Record';
+        (exception?.meta?.modelName as string)?.toLowerCase() || 'Record';
 
       switch (exception.code) {
         case 'P2002':
@@ -34,14 +33,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           break;
         case 'P2025':
           status = HttpStatus.NOT_FOUND;
-          finalMessage = `This ${modelName} not found in our records.`;
+          finalMessage = `This ${modelName} was not found.`;
           break;
         default:
+          status = HttpStatus.BAD_REQUEST;
           finalMessage = `Database Error: ${exception.code}`;
       }
-    }
-    // Https exception error
-    else if (exception instanceof HttpException) {
+    } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
 
@@ -52,7 +50,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         exceptionResponse !== null
       ) {
         const msg = (exceptionResponse as any).message;
-        finalMessage = Array.isArray(msg) ? msg.join(', ') : msg;
+
+        finalMessage = Array.isArray(msg) ? msg[0] : msg;
       }
     } else {
       finalMessage = exception.message || 'Something went wrong';

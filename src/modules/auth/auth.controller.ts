@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import express from 'express';
 import { AuthService } from '@/modules/auth/auth.service';
 import { ZodValidationPipe } from '@/common/pipes/zod_validation.pipe';
@@ -6,6 +6,8 @@ import {
   registerSchema,
   type RegisterDto,
 } from '@/modules/auth/dto/create.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { env } from '@/common/config/env';
 import { loginSchema, type LoginDto } from '@/modules/auth/dto/login.dto';
 
 @Controller('auth')
@@ -24,27 +26,27 @@ export class AuthController {
     };
   }
 
+  @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(
     @Body(new ZodValidationPipe(loginSchema)) body: LoginDto,
-    @Res({ passthrough: true }) res: express.Response,
+    @Res({ passthrough: true })
+    res: express.Response,
   ) {
     const { accessToken, refreshToken } = await this.authService.login(body);
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7 * 1000,
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 1 * 24 * 60 * 60 * 1000,
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 30 * 1000,
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return { accessToken, refreshToken, message: 'User login successfully!' };

@@ -1,11 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
-import { GlobalExceptionFilter } from '@/common/middleware/globalExceptionFilter';
+import { GlobalExceptionFilter } from '@/common/filters/globalExceptionFilter';
 import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
+import { env } from '@/common/config/env';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.enableCors({
+    Origin: [env.FRONTEND_URL1],
+    Methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    Credential: true,
+  });
 
   app.use(cookieParser());
 

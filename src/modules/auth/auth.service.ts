@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   NotAcceptableException,
   NotFoundException,
@@ -7,13 +8,36 @@ import { prisma } from '../../common/config/prisma';
 import bcryptjs from 'bcryptjs';
 import { env } from '../../common/config/env';
 import { jwtTokenGen } from '@/common/helper/jwtTokenGen';
-import { LoginDto } from '@/modules/auth/dto/login.dto';
 import { RegisterDto } from '@/modules/auth/dto/create.dto';
 
 @Injectable()
 export class AuthService {
+  async validateUser(email: string, pass: string) {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found!');
+    }
+
+    const isPassCorrect = await bcryptjs.compare(pass, user.password);
+
+    if (!isPassCorrect) {
+      throw new NotAcceptableException('Invalid Password!');
+    }
+
+    const { password, ...result } = user;
+    return result;
+  }
   async register(userData: RegisterDto) {
     const { email, password, ...rest } = userData;
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+
+    if (existingUser) {
+      throw new ConflictException('User with this email already exists!');
+    }
 
     const hasedPass = await bcryptjs.hash(
       password,
@@ -28,26 +52,12 @@ export class AuthService {
       },
     });
 
-    return user;
+    const { password: _, ...result } = user;
+
+    return result;
   }
 
-  async login(userData: LoginDto) {
-    const { email, password } = userData;
-
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found!');
-    }
-
-    const isPassCorrect = await bcryptjs.compare(password, user.password);
-
-    if (!isPassCorrect) {
-      throw new NotAcceptableException('Invalid Password!');
-    }
-
+  async login(user: any) {
     const { accessToken, refreshToken } = await jwtTokenGen({
       id: user.id,
       email: user.email,
