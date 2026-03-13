@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import express from 'express';
 import { AuthService } from '@/modules/auth/auth.service';
 import { ZodValidationPipe } from '@/common/pipes/zod_validation.pipe';
@@ -7,7 +15,7 @@ import {
   type RegisterDto,
 } from '@/modules/auth/dto/create.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { env } from '@/common/config/env';
+import { env } from '@/common/config/env.config';
 import { loginSchema, type LoginDto } from '@/modules/auth/dto/login.dto';
 
 @Controller('auth')
@@ -26,8 +34,8 @@ export class AuthController {
     };
   }
 
-  @UseGuards(AuthGuard('local'))
   @Post('login')
+  @UseGuards(AuthGuard('local'))
   async login(
     @Body(new ZodValidationPipe(loginSchema)) body: LoginDto,
     @Res({ passthrough: true })
@@ -50,5 +58,22 @@ export class AuthController {
     });
 
     return { accessToken, refreshToken, message: 'User login successfully!' };
+  }
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() {}
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleAuthRedirect(
+    @Req() req: express.Request,
+    @Res() res: express.Response,
+  ) {
+    const result = await this.authService.googleLogin(req);
+
+    return res.redirect(
+      `http://localhost:3001/login-success?token=${result.accessToken}`,
+    );
   }
 }

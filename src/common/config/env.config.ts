@@ -8,6 +8,9 @@ const envSchema = z.object({
   API_SECRET: z.string().min(1),
   FRONTEND_URL1: z.string().url(),
   NODE_ENV: z.string().min(1),
+  CLIENT_ID: z.string().min(1),
+  CLIENT_SECRET: z.string().min(1),
+  CALLBACK_URL: z.string().min(1),
 });
 
 const parsedEnv = envSchema.parse(process.env);
@@ -23,5 +26,10 @@ export const env = {
     CLOUD_NAME: parsedEnv.CLOUD_NAME,
     API_KEY: parsedEnv.API_KEY,
     API_SECRET: parsedEnv.API_SECRET,
+  },
+  GOOGLE: {
+    CLIENT_ID: parsedEnv.CLIENT_ID,
+    CLIENT_SECRET: parsedEnv.CLIENT_SECRET,
+    CALLBACK_URL: parsedEnv.CALLBACK_URL,
   },
 };

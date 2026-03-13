@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotAcceptableException,
@@ -6,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { prisma } from '../../common/config/prisma';
 import bcryptjs from 'bcryptjs';
-import { env } from '../../common/config/env';
+import { env } from '../../common/config/env.config';
 import { jwtTokenGen } from '@/common/helper/jwtTokenGen';
 import { RegisterDto } from '@/modules/auth/dto/create.dto';
 
@@ -58,6 +59,7 @@ export class AuthService {
   }
 
   async login(user: any) {
+    console.log('Login User=>>', user);
     const { accessToken, refreshToken } = await jwtTokenGen({
       id: user.id,
       email: user.email,
@@ -65,5 +67,30 @@ export class AuthService {
     });
 
     return { accessToken, refreshToken };
+  }
+
+  async googleLogin(req: any) {
+    if (!req.user) {
+      throw new BadRequestException('No user from google');
+    }
+
+    let user = await prisma.user.findUnique({
+      where: { email: req.user.email },
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email: req.user.email,
+          name: req.user?.name,
+          picture: req.user?.picture,
+          password: '',
+        },
+      });
+    }
+
+    const { id, email, role } = user;
+
+    return this.login({ id, email, role });
   }
 }

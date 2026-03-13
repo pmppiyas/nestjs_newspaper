@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import { GlobalExceptionFilter } from '@/common/filters/globalExceptionFilter';
 import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
-import { env } from '@/common/config/env';
+import { env } from '@/common/config/env.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
