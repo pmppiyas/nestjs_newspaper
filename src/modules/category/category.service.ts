@@ -25,6 +25,16 @@ export class CategoryService {
     });
   }
 
+  async getAllCategories() {
+    return await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+      },
+    });
+  }
+
   async updateCategory(id: string, payload: Prisma.CategoryUpdateInput) {
     const isExist = await prisma.category.findFirst({
       where: {

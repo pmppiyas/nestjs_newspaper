@@ -113,6 +113,7 @@ export class PostService {
         total,
         inPage,
         page,
+        limit,
         sortBy,
         sortOrder,
       },

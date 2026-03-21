@@ -35,7 +35,9 @@ export class AuthGuard implements CanActivate {
         throw new UnauthorizedException('User not found!');
       }
 
-      request.user = user;
+      const { password, ...restData } = user;
+
+      request.user = restData;
       return true;
     } catch (error) {
       throw new UnauthorizedException(' Invalid or expired token');

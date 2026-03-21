@@ -1,5 +1,5 @@
 import { env } from '@/common/config/env.config';
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 export const jwtTokenGen = async (payload: {
   id: string;
@@ -12,8 +12,8 @@ export const jwtTokenGen = async (payload: {
     {
       algorithm: 'HS256',
       expiresIn: '5h',
-    },
-  ) as SignOptions;
+    }
+  );
 
   const refreshToken = jwt.sign(
     { id: payload.id, email: payload.email, role: payload.role },
@@ -21,8 +21,8 @@ export const jwtTokenGen = async (payload: {
     {
       algorithm: 'HS256',
       expiresIn: '30d',
-    },
-  ) as SignOptions;
+    }
+  );
 
   return {
     accessToken,
