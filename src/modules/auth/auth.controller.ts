@@ -73,7 +73,7 @@ export class AuthController {
     const result = await this.authService.googleLogin(req);
 
     return res.redirect(
-      `http://localhost:3001/login-success?token=${result.accessToken}`,
+      `${env.FRONTEND_URL1}/login-success?token=${result.accessToken}`,
     );
   }
 }

@@ -4,6 +4,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 interface MyTokenPayload {
   id: string;
   email: string;
+  role: string
 }
 
 export const verifyToken = (token: string): MyTokenPayload => {
@@ -12,5 +13,6 @@ export const verifyToken = (token: string): MyTokenPayload => {
   return {
     id: (decoded as any).id,
     email: (decoded as any).email,
+    role: decoded.role,
   };
 };

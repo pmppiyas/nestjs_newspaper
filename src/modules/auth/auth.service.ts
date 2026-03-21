@@ -4,6 +4,7 @@ import {
   Injectable,
   NotAcceptableException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { prisma } from '../../common/config/prisma';
 import bcryptjs from 'bcryptjs';
@@ -58,8 +59,17 @@ export class AuthService {
     return result;
   }
 
-  async login(user: any) {
-    console.log('Login User=>>', user);
+  async login(payload: any) {
+    const user = await prisma.user.findUnique({
+      where: {
+        email: payload?.email,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not exist');
+    }
+
     const { accessToken, refreshToken } = await jwtTokenGen({
       id: user.id,
       email: user.email,
