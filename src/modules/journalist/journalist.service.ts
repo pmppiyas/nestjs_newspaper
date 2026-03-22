@@ -1,7 +1,7 @@
 import { prisma } from '@/common/config/prisma';
 
 import { Injectable } from '@nestjs/common';
-import { Role } from '@prisma/client';
+import { RequestStatus, Role } from '@prisma/client';
 
 @Injectable()
 export class JournalistService {
@@ -71,6 +71,54 @@ export class JournalistService {
         limit: Number(limit),
         sortBy,
         sortOrder,
+      },
+    };
+  }
+
+  async getAllRequests(filters?: {
+    status?: RequestStatus;
+    page?: number;
+    limit?: number;
+  }) {
+    const { status = 'PENDING', page = 1, limit = 20 } = filters || {};
+
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
+    const where: any = {
+      status: status,
+    };
+
+    const requests = await prisma.request.findMany({
+      where,
+      skip,
+      take,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            picture: true,
+            role: true,
+            createdAt: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    const total = await prisma.request.count({ where });
+
+    return {
+      data: requests,
+      meta: {
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        status,
       },
     };
   }
