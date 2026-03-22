@@ -1,0 +1,12 @@
+model Request {
+  id        String        @id @default(cuid())
+  role      Role          @default(JOURNALIST)
+  status    RequestStatus @default(PENDING)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  adminNote String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@map("requests")
+}

@@ -3,3 +3,9 @@ enum Role {
   JOURNALIST
   READER
 }
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

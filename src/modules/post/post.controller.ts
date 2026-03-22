@@ -26,6 +26,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Role } from '@prisma/client';
+import { success } from 'zod';
 
 @Controller('post')
 export class PostController {
@@ -84,6 +85,7 @@ export class PostController {
       authorId,
     });
     return {
+      success: true,
       message: 'News restrieved successfully!',
       data: result,
     };
