@@ -1,6 +1,7 @@
 import { prisma } from '@/common/config/prisma';
+import { IJwtPayload } from '@/common/interfaces/jwt.interface';
 
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { RequestStatus, Role } from '@prisma/client';
 
 @Injectable()
@@ -121,5 +122,30 @@ export class JournalistService {
         status,
       },
     };
+  }
+
+  async beAJournalist(user: IJwtPayload) {
+    const isExist = await prisma.request.findFirst({
+      where: {
+        userId: user.id,
+        role: 'JOURNALIST',
+        status: 'PENDING',
+      },
+    });
+
+    if (isExist) {
+      throw new ConflictException(
+        'আপনি ইতিমধ্যে একটি আবেদন করেছেন। অনুগ্রহ করে অ্যাডমিনের সিদ্ধান্তের জন্য অপেক্ষা করুন।',
+      );
+    }
+    const request = await prisma.request.create({
+      data: {
+        role: 'JOURNALIST',
+        status: 'PENDING',
+        userId: user.id,
+      },
+    });
+
+    return request;
   }
 }
