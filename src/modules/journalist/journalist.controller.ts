@@ -2,7 +2,7 @@ import { Auth } from '@/common/decorators/auth.decorator';
 import { CurrentUser } from '@/common/decorators/user.decorator';
 import { IJwtPayload } from '@/common/interfaces/jwt.interface';
 import { JournalistService } from '@/modules/journalist/journalist.service';
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { RequestStatus, Role, User } from '@prisma/client';
 
 @Controller('journalist')
@@ -35,7 +35,7 @@ export class JournalistController {
     };
   }
 
-  @Post('journalist_request')
+  @Post('request')
   @Auth(Role.READER)
   async beAJournalist(@CurrentUser() user: IJwtPayload) {
     const result = await this.journalistService.beAJournalist(user);
@@ -62,6 +62,23 @@ export class JournalistController {
     return {
       success: true,
       message: 'All journalist requests retrieved successfully',
+      data: result,
+    };
+  }
+
+  @Get('handle')
+  @Auth(Role.ADMIN)
+  async handleBeAjournalist(
+    @Param('id') targetId: string,
+    @Query('status') status: RequestStatus,
+  ) {
+    const result = await this.journalistService.handleBeAJournalist({
+      targetId,
+      status,
+    });
+
+    return {
+      message: 'Request handle successfully',
       data: result,
     };
   }
