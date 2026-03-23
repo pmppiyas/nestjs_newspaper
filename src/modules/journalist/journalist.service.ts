@@ -1,7 +1,11 @@
 import { prisma } from '@/common/config/prisma';
 import { IJwtPayload } from '@/common/interfaces/jwt.interface';
 
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { RequestStatus, Role } from '@prisma/client';
 
 @Injectable()
@@ -147,5 +151,46 @@ export class JournalistService {
     });
 
     return request;
+  }
+
+  async handleBeAJournalist(payload: {
+    targetId: string;
+    status: RequestStatus;
+  }) {
+    const { targetId, status } = payload;
+
+    const targetedRequest = await prisma.request.findUnique({
+      where: {
+        id: targetId,
+      },
+    });
+
+    if (!targetedRequest) {
+      throw new NotFoundException('Targeted request not found');
+    }
+
+    return await prisma.$transaction(async (tx) => {
+      const updateRequest = await tx.request.update({
+        where: {
+          id: targetId,
+        },
+        data: {
+          status,
+        },
+      });
+
+      if (status === 'APPROVED') {
+        await tx.user.update({
+          where: {
+            id: targetedRequest.userId,
+          },
+          data: {
+            role: 'JOURNALIST',
+          },
+        });
+      }
+
+      return updateRequest;
+    });
   }
 }
