@@ -8,6 +8,8 @@ import { env } from '@/common/config/env.config';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  console.log(env);
+
   app.enableCors({
     origin: [env.FRONTEND_URL1, env.FRONTEND_URL2],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -22,4 +24,5 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 }
+
 void bootstrap();
