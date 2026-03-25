@@ -8,11 +8,9 @@ import { env } from '@/common/config/env.config';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  console.log(env);
-
   app.enableCors({
     origin: (origin, callback) => {
-      const allowedOrigins = [env.FRONTEND_URL1, env.FRONTEND_URL2];
+      const allowedOrigins = [env.FRONTEND_URL1];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
