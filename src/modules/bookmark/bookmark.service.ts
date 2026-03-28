@@ -68,6 +68,7 @@ export class BookmarkService {
             category: {
               select: { name: true },
             },
+            viewCount: true,
           },
         },
       },
