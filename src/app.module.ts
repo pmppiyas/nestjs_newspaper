@@ -8,9 +8,10 @@ import { CommentModule } from './modules/comment/comment.module';
 import { UserModule } from './modules/user/user.module';
 import { JournalistModule } from './modules/journalist/journalist.module';
 import { BookmarkModule } from './modules/bookmark/bookmark.module';
+import { MetaModule } from './modules/meta/meta.module';
 
 @Module({
-  imports: [AuthModule, PostModule, CategoryModule, CommentModule, UserModule, JournalistModule, BookmarkModule],
+  imports: [AuthModule, PostModule, CategoryModule, CommentModule, UserModule, JournalistModule, BookmarkModule, MetaModule],
 
   controllers: [AppController],
   providers: [AppService],

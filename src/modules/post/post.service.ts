@@ -140,6 +140,10 @@ export class PostService {
           increment: 1,
         },
       },
+      include: {
+        category: true,
+        tags: true,
+      },
     });
 
     return news;
