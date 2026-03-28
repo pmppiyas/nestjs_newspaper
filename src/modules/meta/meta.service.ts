@@ -38,4 +38,30 @@ export class MetaService {
       pendingJournalist,
     };
   }
+
+  async getReaderStats(userId: string) {
+    const readNewsCount = await prisma.readingHistory.count({
+      where: {
+        userId,
+      },
+    });
+
+    const commentCount = await prisma.comment.count({
+      where: {
+        authorId: userId,
+      },
+    });
+
+    const bookmarkCount = await prisma.bookmark.count({
+      where: {
+        userId,
+      },
+    });
+
+    return {
+      readNews: readNewsCount,
+      comments: commentCount,
+      bookmarks: bookmarkCount,
+    };
+  }
 }
