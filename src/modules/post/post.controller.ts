@@ -1,6 +1,8 @@
 import { multerOptions } from '@/common/config/multer.config';
 import { Auth } from '@/common/decorators/auth.decorator';
+import { OptionalCurrentUser } from '@/common/decorators/optionalUser.decorator';
 import { CurrentUser } from '@/common/decorators/user.decorator';
+import { OptionalAuthGuard } from '@/common/guards/optional-auth.guard';
 import { IJwtPayload } from '@/common/interfaces/jwt.interface';
 import { ZodValidationPipe } from '@/common/pipes/zod_validation.pipe';
 import {
@@ -21,9 +23,12 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Role } from '@prisma/client';
 import { success } from 'zod';
@@ -92,8 +97,14 @@ export class PostController {
   }
 
   @Get(':id')
-  async getById(@Param('id') newsId: string) {
-    const news = await this.postService.getById(newsId);
+  @UseGuards(new OptionalAuthGuard())
+  async getById(
+    @Param('id') newsId: string,
+    @OptionalCurrentUser() user: IJwtPayload,
+  ) {
+    const userId = user?.id;
+
+    const news = await this.postService.getById({ newsId, userId });
 
     return {
       message: 'Single news retrieved successfully!',

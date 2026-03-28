@@ -1,0 +1,12 @@
+model ReadingHistory {
+  id     String @id @default(cuid())
+  userId String
+  newsId String
+  user   User   @relation(fields: [userId], references: [id])
+  news   News   @relation(fields: [newsId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, newsId])
+  @@map("reading_histories")
+}

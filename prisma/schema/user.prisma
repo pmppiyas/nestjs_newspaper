@@ -1,15 +1,16 @@
 model User {
-  id        String     @id @default(cuid())
-  name      String?
-  email     String     @unique
-  password  String
-  picture   String?
-  createdAt DateTime   @default(now())
-  news      News[]
-  comments  Comment[]
-  role      Role       @default(READER)
-  requests  Request[]
-  bookmarks Bookmark[]
+  id               String           @id @default(cuid())
+  name             String?
+  email            String           @unique
+  password         String
+  picture          String?
+  createdAt        DateTime         @default(now())
+  news             News[]
+  comments         Comment[]
+  role             Role             @default(READER)
+  requests         Request[]
+  bookmarks        Bookmark[]
+  readingHistories ReadingHistory[]
 
   @@map("users")
 }

@@ -120,35 +120,54 @@ export class PostService {
     };
   }
 
-  async getById(newsId: string) {
+  async getById({ newsId, userId }: { newsId: string; userId?: string }) {
     const news = await prisma.news.findUnique({
-      where: {
-        id: newsId,
+      where: { id: newsId },
+      include: {
+        category: true,
+        tags: true,
+        _count: {
+          select: { readingHistories: true },
+        },
       },
     });
 
     if (!news) {
-      throw new NotFoundException('Targeted news not founded!');
+      throw new NotFoundException('Targeted news not found!');
     }
 
-    await prisma.news.update({
-      where: {
-        id: newsId,
-      },
-      data: {
-        viewCount: {
-          increment: 1,
+    if (userId) {
+      const isAlreadyRead = await prisma.readingHistory.findUnique({
+        where: {
+          userId_newsId: { userId, newsId },
         },
-      },
-      include: {
-        category: true,
-        tags: true,
-      },
-    });
+      });
+
+      if (!isAlreadyRead) {
+        await prisma.readingHistory.create({
+          data: { userId, newsId },
+        });
+
+        return await prisma.news.update({
+          where: { id: newsId },
+          data: { viewCount: { increment: 1 } },
+          include: { category: true, tags: true },
+        });
+      }
+    }
+
+    else {
+      return await prisma.news.update({
+        where: { id: newsId },
+        data: { viewCount: { increment: 1 } },
+        include: { category: true, tags: true },
+      });
+    }
 
     return news;
   }
 
+  
   async updateNews(user: IJwtPayload, newsId: string, payload: any) {
     const news = await prisma.news.findUnique({
       where: {
