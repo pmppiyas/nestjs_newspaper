@@ -24,13 +24,14 @@ import {
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { Auth } from '@/common/decorators/auth.decorator';
+import { AuthGuard } from '@/common/guards/auth.guard';
 
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
   @Auth(Role.ADMIN)
   async createCategory(
     @Body(new ZodValidationPipe(categoryCreateSchema)) body: CategoryCreateDto,
@@ -53,7 +54,7 @@ export class CategoryController {
   }
 
   @Patch(':id')
-  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
   @Roles(Role.ADMIN)
   async updateCategory(
     @Param('id') id: string,
@@ -67,8 +68,19 @@ export class CategoryController {
     };
   }
 
+  @Patch('update/position')
+  @UseGuards(AuthGuard)
+  @Roles(Role.ADMIN)
+  async updatePosition(@Body() body: { id: string; position: number }[]) {
+    const result = await this.categoryService.updatePosition(body);
+
+    return {
+      message: 'Position updated successfully!',
+    };
+  }
+
   @Delete(':id')
-  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
   @Roles(Role.ADMIN)
   async deleteCategory(@Param('id') id: string) {
     await this.categoryService.deleteCategory(id);

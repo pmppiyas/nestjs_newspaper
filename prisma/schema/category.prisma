@@ -2,6 +2,7 @@ model Category {
   id          String   @id @default(cuid())
   name        String   @unique
   description String?
+  position    Int      @default(999)
   createdAt   DateTime @default(now())
 
   posts News[]

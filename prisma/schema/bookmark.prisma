@@ -5,7 +5,7 @@ model Bookmark {
   user   User    @relation(fields: [userId], references: [id])
   userId String
 
-  news   News   @relation(fields: [newsId], references: [id])
+  news   News   @relation(fields: [newsId], references: [id], onDelete: Cascade)
   newsId String
 
   createdAt DateTime @default(now())
