@@ -3,7 +3,7 @@ model ReadingHistory {
   userId String
   newsId String
   user   User   @relation(fields: [userId], references: [id])
-  news   News   @relation(fields: [newsId], references: [id])
+  news   News   @relation(fields: [newsId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 

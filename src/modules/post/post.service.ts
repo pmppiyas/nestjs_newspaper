@@ -154,9 +154,7 @@ export class PostService {
           include: { category: true, tags: true },
         });
       }
-    }
-
-    else {
+    } else {
       return await prisma.news.update({
         where: { id: newsId },
         data: { viewCount: { increment: 1 } },
@@ -167,7 +165,6 @@ export class PostService {
     return news;
   }
 
-  
   async updateNews(user: IJwtPayload, newsId: string, payload: any) {
     const news = await prisma.news.findUnique({
       where: {
@@ -185,12 +182,26 @@ export class PostService {
       throw new UnauthorizedException('You are not authorized!');
     }
 
+    const { tags, ...restData } = payload;
+
+    const tagsUpdate =
+      tags?.length > 0
+        ? {
+            set: [],
+            connectOrCreate: tags.map((tagName: string) => ({
+              where: { name: tagName },
+              create: { name: tagName },
+            })),
+          }
+        : undefined;
+
     const update = await prisma.news.update({
       where: {
         id: newsId,
       },
       data: {
-        ...payload,
+        ...restData,
+        tags: tagsUpdate,
         updatedAt: new Date(),
       },
     });

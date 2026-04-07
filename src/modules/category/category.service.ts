@@ -31,6 +31,10 @@ export class CategoryService {
         id: true,
         name: true,
         description: true,
+        position: true,
+      },
+      orderBy: {
+        position: 'asc',
       },
     });
   }
@@ -54,6 +58,23 @@ export class CategoryService {
         ...payload,
       },
     });
+  }
+
+  async updatePosition(items: { id: string; position: number }[]) {
+    try {
+      return await prisma.$transaction(
+        items.map((item) =>
+          prisma.category.update({
+            where: { id: item.id },
+            data: { position: item.position },
+          }),
+        ),
+      );
+    } catch (err) {
+      return {
+        message: 'Failed to update position',
+      };
+    }
   }
 
   async deleteCategory(id: string) {

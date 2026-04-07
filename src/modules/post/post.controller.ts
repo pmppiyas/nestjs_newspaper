@@ -114,13 +114,21 @@ export class PostController {
 
   @Patch('edit')
   @Auth(Role.ADMIN, Role.JOURNALIST)
+  @UseInterceptors(FileInterceptor('image', multerOptions))
   async updateNews(
     @CurrentUser() user: IJwtPayload,
     @Body(new ZodValidationPipe(updateNewsSchema)) body: UpdateNewsDto,
     @Query('newsId') newsId: string,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    const result = await this.postService.updateNews(user, newsId, body);
+    const imageUrl = file?.path;
+
+    const result = await this.postService.updateNews(user, newsId, {
+      ...(body as Record<string, unknown>),
+      imageUrl,
+    });
     return {
+      success: true,
       message: 'News updated successfully!',
       data: result,
     };
@@ -132,6 +140,7 @@ export class PostController {
     @CurrentUser() user: IJwtPayload,
     @Query('newsId') newsId: string,
   ) {
+    console.log('Received newsId for deletion:', newsId);
     await this.postService.deleteNews(user, newsId);
 
     return {
