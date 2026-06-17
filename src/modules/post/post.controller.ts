@@ -64,27 +64,31 @@ export class PostController {
     @Query('sortBy') sortBy = 'publishedAt',
     @Query('sortOrder') sortOrder = 'desc',
     @Query('authorId') authorId?: string,
+    @Query("status") status?: string,
   ) {
     const tagsArray = tags ? tags.split(',') : undefined;
 
     if (section === 'latest') {
       sortBy = 'publishedAt';
       sortOrder = 'desc';
+      limit = "5";
     }
 
     if (section === 'popular') {
       sortBy = 'viewCount';
       sortOrder = 'desc';
+      limit = "5"
     }
 
     const result = await this.postService.getAllNews({
       category,
       tags: tagsArray,
+      status,
       limit: parseInt(limit),
       page: parseFloat(page),
       sortBy,
       sortOrder,
-      authorId,
+      authorId
     });
     return {
       success: true,

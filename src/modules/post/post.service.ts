@@ -62,6 +62,7 @@ export class PostService {
     sortBy: string;
     sortOrder: string;
     authorId?: string;
+    status?: string;
   }) {
     const {
       category,
@@ -71,9 +72,10 @@ export class PostService {
       sortBy = 'createdAt',
       sortOrder = 'desc',
       authorId = '',
+      status = PostStatus.APPROVED
     } = filters || {};
 
-    const where: any = {};
+    const where: any = { status };
 
     if (category) {
       where.category = {
@@ -102,6 +104,7 @@ export class PostService {
       orderBy: {
         [sortBy]: sortOrder,
       },
+
 
       include: {
         category: {
