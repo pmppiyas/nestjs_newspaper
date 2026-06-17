@@ -8,6 +8,13 @@ export const categoryCreateSchema = z.object({
     })
     .min(1, 'Name cannot be empty')
     .max(50, 'Name is too long'),
+  slug: z
+    .string({
+      required_error: 'Slug name is required',
+      invalid_type_error: 'Slug must be a string',
+    })
+    .min(1, 'Slug cannot be empty')
+    .max(50, 'Slug is too long'),
   description: z.string().optional(),
 });
 

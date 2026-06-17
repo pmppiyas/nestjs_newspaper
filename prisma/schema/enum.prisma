@@ -9,3 +9,9 @@ enum RequestStatus {
   APPROVED
   REJECTED
 }
+
+enum PostStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

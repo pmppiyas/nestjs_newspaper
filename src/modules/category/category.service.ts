@@ -30,6 +30,7 @@ export class CategoryService {
       select: {
         id: true,
         name: true,
+        slug: true,
         description: true,
         position: true,
       },

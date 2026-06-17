@@ -1,11 +1,12 @@
 import { prisma } from '@/common/config/prisma';
 import { IJwtPayload } from '@/common/interfaces/jwt.interface';
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Role } from '@prisma/client';
+import { PostStatus, Role } from '@prisma/client';
 
 @Injectable()
 export class PostService {
@@ -19,9 +20,20 @@ export class PostService {
           email: user.email,
         },
       });
+
+      const catSlug = await prisma.category.findUnique({
+        where: {
+          id: restData.categoryId
+        },
+        select: {
+          slug: true
+        }
+      })
+
       const news = await tx.news.create({
         data: {
           authorId: IAM?.id,
+          categorySlug: catSlug?.slug,
           ...restData,
           tags: {
             connectOrCreate: tags?.map((name: string) => ({
@@ -65,7 +77,7 @@ export class PostService {
 
     if (category) {
       where.category = {
-        name: category,
+        slug: category,
       };
     }
 
@@ -92,7 +104,14 @@ export class PostService {
       },
 
       include: {
-        category: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            position: true
+          }
+        },
         tags: true,
       },
     });
@@ -165,6 +184,39 @@ export class PostService {
     return news;
   }
 
+  async getMyPost({ userId, status }: { userId: string; status: PostStatus }) {
+    if (!userId) {
+      throw new UnauthorizedException('User ID is required');
+    }
+
+    const [posts, count] = await prisma.$transaction([
+      prisma.news.findMany({
+        where: {
+          authorId: userId,
+          status: status,
+        },
+        orderBy: {
+          publishedAt: 'desc',
+        },
+        include: {
+          category: true,
+          tags: true,
+        },
+      }),
+      prisma.news.count({
+        where: {
+          authorId: userId,
+          status: status,
+        },
+      }),
+    ]);
+
+    return {
+      posts,
+      count,
+    };
+  }
+
   async updateNews(user: IJwtPayload, newsId: string, payload: any) {
     const news = await prisma.news.findUnique({
       where: {
@@ -176,10 +228,11 @@ export class PostService {
       throw new NotFoundException('Targeted news not found!');
     }
 
-    const isOwner = (news.authorId = user.id);
+    const isOwner = news.authorId === user.id;
+    console.log('Is Owner', isOwner);
 
-    if (!isOwner || user.role !== Role.ADMIN) {
-      throw new UnauthorizedException('You are not authorized!');
+    if (user.role !== Role.ADMIN && !isOwner) {
+      throw new ForbiddenException('You are not authorized to edit this news!');
     }
 
     const { tags, ...restData } = payload;
@@ -187,12 +240,12 @@ export class PostService {
     const tagsUpdate =
       tags?.length > 0
         ? {
-            set: [],
-            connectOrCreate: tags.map((tagName: string) => ({
-              where: { name: tagName },
-              create: { name: tagName },
-            })),
-          }
+          set: [],
+          connectOrCreate: tags.map((tagName: string) => ({
+            where: { name: tagName },
+            create: { name: tagName },
+          })),
+        }
         : undefined;
 
     const update = await prisma.news.update({

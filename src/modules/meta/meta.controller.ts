@@ -29,4 +29,15 @@ export class MetaController {
       data: result,
     };
   }
+
+  @Get('journalist')
+  @Auth('JOURNALIST')
+  async journalistStats(@CurrentUser() user: IJwtPayload) {
+    const result = await this.metaServices.getJournalistStats(user.id);
+
+    return {
+      message: "Journalist's stats retrieved successfully",
+      data: result,
+    };
+  }
 }

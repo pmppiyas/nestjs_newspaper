@@ -64,4 +64,49 @@ export class MetaService {
       bookmarks: bookmarkCount,
     };
   }
+
+  async getJournalistStats(userId: string) {
+    const approvedCount = await prisma.news.count({
+      where: {
+        authorId: userId,
+        status: 'APPROVED',
+      },
+    });
+
+    const pendingCount = await prisma.news.count({
+      where: {
+        authorId: userId,
+        status: 'PENDING',
+      },
+    });
+
+    const rejectedCount = await prisma.news.count({
+      where: {
+        authorId: userId,
+        status: 'REJECTED',
+      },
+    });
+
+    const totalNews = approvedCount + pendingCount + rejectedCount || 0;
+
+    const myNewsViews = await prisma.news.aggregate({
+      where: {
+        authorId: userId,
+        status: 'APPROVED',
+      },
+      _sum: {
+        viewCount: true,
+      },
+    });
+
+    const totalViews = myNewsViews._sum.viewCount || 0;
+
+    return {
+      total: totalNews,
+      approve: approvedCount,
+      pending: pendingCount,
+      reject: rejectedCount,
+      views: totalViews,
+    };
+  }
 }

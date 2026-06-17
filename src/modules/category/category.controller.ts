@@ -28,7 +28,7 @@ import { AuthGuard } from '@/common/guards/auth.guard';
 
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(private readonly categoryService: CategoryService) { }
 
   @Post()
   @UseGuards(AuthGuard)

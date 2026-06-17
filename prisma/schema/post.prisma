@@ -8,12 +8,12 @@ model News {
 
   viewCount Int @default(0)
 
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId String
-
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId String
-
+  author           User             @relation(fields: [authorId], references: [id])
+  authorId         String
+  status           PostStatus       @default(PENDING)
+  category         Category         @relation(fields: [categoryId], references: [id])
+  categoryId       String
+  categorySlug     String
   tags             Tag[]            @relation("newsTags")
   comments         Comment[]
   bookmarks        Bookmark[]

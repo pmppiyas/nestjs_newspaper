@@ -23,19 +23,16 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Role } from '@prisma/client';
-import { success } from 'zod';
+import { PostStatus, Role } from '@prisma/client';
 
 @Controller('post')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService) { }
 
   @Post('create')
   @Auth(Role.ADMIN, Role.JOURNALIST)
@@ -96,6 +93,23 @@ export class PostController {
     };
   }
 
+  @Get('my')
+  @Auth(Role.JOURNALIST, Role.ADMIN)
+  async getMyPost(
+    @CurrentUser() user: IJwtPayload,
+    @Query('status') status = PostStatus.APPROVED,
+  ) {
+    const result = await this.postService.getMyPost({
+      userId: user.id,
+      status,
+    });
+
+    return {
+      message: 'My news retrieved successfully',
+      data: result,
+    };
+  }
+
   @Get(':id')
   @UseGuards(new OptionalAuthGuard())
   async getById(
@@ -140,7 +154,6 @@ export class PostController {
     @CurrentUser() user: IJwtPayload,
     @Query('newsId') newsId: string,
   ) {
-    console.log('Received newsId for deletion:', newsId);
     await this.postService.deleteNews(user, newsId);
 
     return {
