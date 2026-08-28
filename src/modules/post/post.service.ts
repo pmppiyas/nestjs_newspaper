@@ -104,8 +104,6 @@ export class PostService {
       orderBy: {
         [sortBy]: sortOrder,
       },
-
-
       include: {
         category: {
           select: {

@@ -70,13 +70,15 @@ export class AuthService {
       throw new UnauthorizedException('User not exist');
     }
 
+    const { password: _, ...result } = user;
+
     const { accessToken, refreshToken } = await jwtTokenGen({
       id: user.id,
       email: user.email,
       role: user.role,
     });
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, user: result };
   }
 
   async googleLogin(req: any) {

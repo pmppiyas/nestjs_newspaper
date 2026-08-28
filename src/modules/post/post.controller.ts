@@ -80,6 +80,12 @@ export class PostController {
       limit = "5"
     }
 
+    if (category) {
+      sortBy = 'publishedAt';
+      sortOrder = 'desc';
+      limit = "5"
+    }
+
     const result = await this.postService.getAllNews({
       category,
       tags: tagsArray,
